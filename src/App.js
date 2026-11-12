@@ -65,6 +65,26 @@ function App() {
     const data = await response.json();
     setLoadedData(data);
   }
+
+  async function deleteAccount() {
+    const savedToken = token || localStorage.getItem('token');
+
+    const response = await fetch('http://localhost:5000/userSettings/deleteAccount', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${savedToken}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed');
+    }
+
+    const data = await response.json();
+    setLoadedData(data)
+  }
   //-----------------------------------------------------------------------------
 
 
@@ -155,6 +175,7 @@ function App() {
 
         <div>
           <button onClick={loadProfile}>Load profile data</button>
+          <button onClick={deleteAccount}>deleteAccount</button>
           <button onClick={logout}>Log out</button>
         </div>
         {loadedData && (
