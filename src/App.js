@@ -10,6 +10,7 @@ function App() {
   const [user, setUser] = useState(null); // Udaje o uzivateli ulozeny v localStorage
   const [token, setToken] = useState(null); // JWT token ulozeny v localStorage - zatim nevyuzit, jen pro testovani
   const [error, setError] = useState(""); // Chybova zprava zobrazena na strance (mimo konzoli)
+  const [loadedData, setLoadedData] = useState(null); // Data nactena z uzivatelskeho profilu
 
 
   // LOGIN WITH GOOGLE
@@ -44,11 +45,11 @@ function App() {
 
   }
 
-  // LOAD PROFILE -- pro testovaci ucely, zatim se nic neloaduje
-  /*async function loadProfile() {
+  // LOAD PROFILE -- pro testovaci ucely, zatim se nic neloaduje-----------------
+  async function loadProfile() {
     const savedToken = token || localStorage.getItem('token');
 
-    const response = await fetch('http://localhost:5000/auth/profile', {
+    const response = await fetch('http://localhost:5000/profile', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -62,13 +63,16 @@ function App() {
     }
 
     const data = await response.json();
-    setUser(data);
-  }*/
+    setLoadedData(data);
+  }
+  //-----------------------------------------------------------------------------
+
 
   // LOGOUT
   function logout() {
     setUser(null);
     setToken(null);
+    setLoadedData(null);
     localStorage.removeItem('token');
   }
 
@@ -135,7 +139,6 @@ function App() {
 
   // stranka, pokud je uzivatel prihlasen
   if (user) {
-    console.log('User is logged in:', user);
     return (
       <main style={{ padding: 24 }}>
         <h1>Welcome, {user.name}</h1>
@@ -151,9 +154,15 @@ function App() {
         )}
 
         <div>
-          {/*<button onClick={loadProfile}>Load profile from API</button>*/}
+          <button onClick={loadProfile}>Load profile data</button>
           <button onClick={logout}>Log out</button>
         </div>
+        {loadedData && (
+        <div style={{ marginTop: 20 }}>
+          <h2>Profile Data:</h2>
+          <pre>{JSON.stringify(loadedData, null, 2)}</pre>
+        </div>
+      )}
       </main>
     );
   }
