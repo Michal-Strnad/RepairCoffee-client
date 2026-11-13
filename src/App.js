@@ -5,6 +5,8 @@ import { GoogleLogin } from '@react-oauth/google';
 //import jwt_decode from 'jwt-decode';
 import { useState } from 'react';
 
+import fetchHelper from './fetchHelper';
+
 function App() {
 
   const [user, setUser] = useState(null); // Udaje o uzivateli ulozeny v localStorage
@@ -66,25 +68,6 @@ function App() {
     setLoadedData(data);
   }
 
-  async function deleteAccount() {
-    const savedToken = token || localStorage.getItem('token');
-
-    const response = await fetch('http://localhost:5000/userSettings/deleteAccount', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${savedToken}`
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed');
-    }
-
-    const data = await response.json();
-    setLoadedData(data)
-  }
   //-----------------------------------------------------------------------------
 
 
@@ -157,6 +140,40 @@ function App() {
     }
   };
 
+  async function updatePicture(updateData) {
+    const newData = await fetchHelper.userSettings.updatePicture(updateData)
+    setUser(newData.newUserData.user);
+  }
+  async function updateName(updateData) {
+    const newData = await fetchHelper.userSettings.updateName(updateData)
+    setUser(newData.newUserData.user);
+  }
+  async function updatePassword(updateData) {
+    setUser(await fetchHelper.userSettings.updatePassword(updateData));
+  }
+  async function deleteAccount() {
+    setUser(await fetchHelper.userSettings.deleteAccount());
+  }
+  async function updateRole() {
+    setUser(await fetchHelper.userSettings.updateRole());
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   // stranka, pokud je uzivatel prihlasen
   if (user) {
     return (
@@ -175,8 +192,47 @@ function App() {
 
         <div>
           <button onClick={loadProfile}>Load profile data</button>
-          <button onClick={deleteAccount}>deleteAccount</button>
           <button onClick={logout}>Log out</button>
+          <button onClick={deleteAccount}>deleteAccount</button>
+
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const updateData = {
+              newName: formData.get('newName'),
+            };
+            updateName(updateData);
+            }}>
+            <input type="text" name="newName" placeholder="new name" required />
+            <button type="submit">Change name</button>
+          </form>
+
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const updateData = {
+              newPassword: formData.get('newPassword'),
+              newPasswordRetype: formData.get('newPasswordRetype')
+            };
+            updatePassword(updateData);
+            }}>
+            <input type="password" name="newPassword" placeholder="Password" required />
+            <input type="password" name="newPasswordRetype" placeholder="Retype password" required />
+            <button type="submit">Change password</button>
+          </form>
+
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const updateData = {
+              profilePicture: formData.get('profilePicture')
+            };
+            updatePicture(updateData);
+            }}>
+            <input type="file" name="profilePicture" required />
+            <button type="submit">Change profile picture</button>
+          </form>
+
         </div>
         {loadedData && (
         <div style={{ marginTop: 20 }}>
