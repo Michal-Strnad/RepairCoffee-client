@@ -7,6 +7,8 @@ import { useState } from 'react';
 
 import fetchHelper from './fetchHelper';
 
+const url =  'http://localhost:5000';
+
 function App() {
 
   const [user, setUser] = useState(null); // Udaje o uzivateli ulozeny v localStorage
@@ -19,7 +21,7 @@ function App() {
   const handleGoogleSuccess = async (credentialResponse) => {
     setError(""); // Vymaze predchozi chyby
     try {
-      const response = await fetch('http://localhost:5000/auth/google', {
+      const response = await fetch(`${url}/auth/google`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -51,7 +53,7 @@ function App() {
   async function loadProfile() {
     const savedToken = token || localStorage.getItem('token');
 
-    const response = await fetch('http://localhost:5000/profile', {
+    const response = await fetch(`${url}/profile`, {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -84,7 +86,7 @@ function App() {
   const handleLogin = async (userData) => {
     setError(""); // Vymaze predchozi chyby
     try {
-      const response = await fetch('http://localhost:5000/auth/email', {
+      const response = await fetch(`${url}/auth/email`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -114,7 +116,7 @@ function App() {
   const handleRegister = async (userData) => {
     setError(""); // Vymaze predchozi chyby
     try {
-      const response = await fetch('http://localhost:5000/auth/register', {
+      const response = await fetch(`${url}/auth/register`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -141,7 +143,9 @@ function App() {
   };
 
   async function updatePicture(updateData) {
-    const newData = await fetchHelper.userSettings.updatePicture(updateData)
+    const formData = new FormData();
+    formData.append('profilePicture', updateData.profilePicture);
+    const newData = await fetchHelper.userSettings.updatePicture(formData)
     setUser(newData.newUserData.user);
   }
   async function updateName(updateData) {
@@ -183,7 +187,7 @@ function App() {
 
         {user.picture && (
           <img
-            src={user.picture}
+            src={`${user.picture}?t=${new Date().getTime()}`}
             alt="Profile"
             width={80}
             style={{ borderRadius: "50%" }}

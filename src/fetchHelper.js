@@ -2,14 +2,16 @@ const url =  'http://localhost:5000';
 
 async function sendRequest(url, option, dtoIn) {
     const savedToken = localStorage.getItem('token');
+    const isFormData = dtoIn instanceof FormData; // Zkontroluje, zda je dtoIn FormData
+
     let response = await fetch(`${url}/${option}`, {
         method: 'POST',
         credentials: 'include',
         headers: {
-            'Content-Type': 'application/json',
+            ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
             'Authorization': `Bearer ${savedToken}`
         },
-        body: JSON.stringify(dtoIn)
+        body: isFormData ? dtoIn : JSON.stringify(dtoIn) // Použije FormData nebo JSON
     });
 
     const data = await response.json();
