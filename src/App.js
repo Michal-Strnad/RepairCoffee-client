@@ -153,13 +153,15 @@ function App() {
     setUser(newData.newUserData.user);
   }
   async function updatePassword(updateData) {
-    setUser(await fetchHelper.userSettings.updatePassword(updateData));
+    const newData = await fetchHelper.userSettings.updatePassword(updateData);
+    setUser(newData.newUserData.user);
   }
   async function deleteAccount() {
     setUser(await fetchHelper.userSettings.deleteAccount());
   }
   async function updateRole() {
-    setUser(await fetchHelper.userSettings.updateRole());
+    const newData = await fetchHelper.userSettings.updateRole();
+    setUser(newData.newUserData.user);
   }
 
 
