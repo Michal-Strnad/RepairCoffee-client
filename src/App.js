@@ -159,9 +159,9 @@ function App() {
   async function deleteAccount() {
     setUser(await fetchHelper.userSettings.deleteAccount());
   }
-  async function updateRole() {
-    const newData = await fetchHelper.userSettings.updateRole();
-    setUser(newData.newUserData.user);
+  async function updateRole(updateData) {
+    const newData = await fetchHelper.userSettings.updateRole(updateData);
+    setLoadedData(newData.message)
   }
 
 
@@ -240,6 +240,21 @@ function App() {
           </form>
 
         </div>
+        {(user.role === "admin") && (
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const updateData = {
+              userEmail: formData.get('email'),
+              role: formData.get('role')
+            };
+            updateRole(updateData);
+            }}>
+            <input type="email" name="email" placeholder="email" required />
+            <input type="text" name="role" placeholder="role" required />
+            <button type="submit">Change role</button>
+          </form>
+        )}
         {loadedData && (
         <div style={{ marginTop: 20 }}>
           <h2>Profile Data:</h2>
