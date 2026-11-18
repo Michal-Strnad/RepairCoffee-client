@@ -157,11 +157,16 @@ function App() {
     setUser(newData.newUserData.user);
   }
   async function deleteAccount() {
-    setUser(await fetchHelper.userSettings.deleteAccount());
+    const message = await fetchHelper.userSettings.deleteAccount();
+    setLoadedData(message.message);
   }
   async function updateRole(updateData) {
     const newData = await fetchHelper.userSettings.updateRole(updateData);
     setLoadedData(newData.message)
+  }
+  async function getUsers() {
+    const users = await fetchHelper.userSettings.getUsers();
+    setLoadedData(users);
   }
 
 
@@ -245,15 +250,18 @@ function App() {
             e.preventDefault();
             const formData = new FormData(e.target);
             const updateData = {
-              userEmail: formData.get('email'),
+              userId: formData.get('userId'),
               role: formData.get('role')
             };
             updateRole(updateData);
             }}>
-            <input type="email" name="email" placeholder="email" required />
+            <input type="number" name="userId" placeholder="user ID" required />
             <input type="text" name="role" placeholder="role" required />
             <button type="submit">Change role</button>
           </form>
+        )}
+        {(user.role === "admin") && (
+         <button onClick={getUsers}>get users</button> 
         )}
         {loadedData && (
         <div style={{ marginTop: 20 }}>

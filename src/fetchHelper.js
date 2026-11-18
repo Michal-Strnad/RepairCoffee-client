@@ -39,8 +39,10 @@ const fetchHelper = {
         updateRole: async(dtoIn) => {
             return await sendRequest(url, 'userSettings/updateRole', dtoIn);
 
+        },
+        getUsers: async(dtoIn) => {
+            return await sendRequest(url, 'userSettings/getUsers', dtoIn);
         }
-
     }
 }
 
